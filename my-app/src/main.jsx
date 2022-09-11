@@ -9,6 +9,7 @@ import JoinGroup from "./commponent/JoinGroup";
 import ListOfContact from "./commponent/ListOfContact";
 import MoreFeature, { BackButton } from "./commponent/MoreFeature";
 import NavbarChat from "./commponent/NavbarChat";
+import { LogOut } from "./commponent/auth/LogOut";
 import darkMode from "./img/darkmode.png";
 import lightMode from "./img/lightmode.png";
 import messageImage from "./img/messageImage.png";
@@ -119,7 +120,7 @@ function ChatApp() {
             <div className="message-header">
               {changeConvo === "groupChats" && (
                 <>
-                  <p>
+                  <p style={{ marginLeft: "20px" }}>
                     {"Group Name: " + selectGroups.groupName} <br />
                     {selectGroups.description && (
                       <span>{selectGroups.description}</span>
@@ -128,7 +129,10 @@ function ChatApp() {
                 </>
               )}
 
-              {changeConvo === "chats" && selectUser}
+              <p style={{ marginLeft: "50px" }}>
+                {changeConvo === "chats" && selectUser}
+              </p>
+              <LogOut />
             </div>
           </div>
 

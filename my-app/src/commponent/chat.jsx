@@ -88,7 +88,7 @@ function Chat({ socket, toUser }) {
 
     setFilterGroupMessage(groupMessage);
   }
-
+  // Get message from the sender and update the current message chat in the array
   useEffect(() => {
     socket.on("receive_message", (data) => {
       setmessage((prev) => {
@@ -179,20 +179,31 @@ function Chat({ socket, toUser }) {
                     )}
 
                     {message.message && (
-                      <div
-                        className="message"
-                        id={profilename === message.sender ? "user" : "other"}
-                      >
-                        <p className="name">
-                          {message.sender === profilename
-                            ? "Me"
-                            : message.sender}
-                        </p>
-                        <p className="text">
-                          {message.message}
-                          <br />
-                          <span className="time">{message.time}</span>
-                        </p>
+                      <div class="container">
+                        <div
+                          class={
+                            toUser === message.sender
+                              ? "message-blue"
+                              : "message-orange"
+                          }
+                        >
+                          <h5>
+                            {message.sender === profilename
+                              ? "Me"
+                              : message.sender}
+                          </h5>
+
+                          <p class="message-content">{message.message}</p>
+                          <div
+                            class={
+                              toUser === message.sender
+                                ? "message-timestamp-left"
+                                : "message-timestamp-right"
+                            }
+                          >
+                            {message.time}
+                          </div>
+                        </div>
                       </div>
                     )}
                   </>
