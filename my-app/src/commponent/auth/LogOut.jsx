@@ -2,9 +2,13 @@ import { ChatOpen } from "../../app";
 import { useContext } from "react";
 
 export function LogOut() {
-  const { settoken, token } = useContext(ChatOpen);
+  const { settoken, setuser, setSelectUse, setprofilename } =
+    useContext(ChatOpen);
   function Log() {
     settoken("");
+    setSelectUse("");
+    setuser("");
+    setprofilename("");
   }
   return (
     <>

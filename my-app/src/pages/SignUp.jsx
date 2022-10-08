@@ -13,7 +13,7 @@ function SingUp() {
   const navigate = useNavigate();
 
   function Submit() {
-    if (username && email && password === confirmPassword) {
+    if (username && email && password) {
       axios
         .post("http://localhost:4195/signup", {
           username: username,
@@ -82,9 +82,7 @@ function SingUp() {
               autoComplete="off"
             />
             {errorMessage === 409 && (
-              <p className="errorMessage">
-                UserName Address has already been taken
-              </p>
+              <p className="errorMessage">UserName has already been taken</p>
             )}
           </div>
 

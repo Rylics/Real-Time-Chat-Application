@@ -14,6 +14,7 @@ import darkMode from "./img/darkmode.png";
 import lightMode from "./img/lightmode.png";
 import messageImage from "./img/messageImage.png";
 import plusImage from "./img/plus.png";
+import unknownImage from "./img/unknownImage";
 
 const socket = io.connect("http://localhost:4195");
 
@@ -39,21 +40,22 @@ function ChatApp() {
         <div className="section-left">
           <div className="contact">
             <div className="sectionLeft-Header">
-              <div className="Mode">
+              <img src={unknownImage} alt="" srcset="" />
+              {/* <div className="Mode">
                 <img
                   onClick={() => setMode(!Mode)}
                   className="ModeImage"
                   src={Mode ? lightMode : darkMode}
                   alt="switch"
                 />
-              </div>
-              <input
+              </div> */}
+              {/* <input
                 className="searchInput"
                 type="text"
                 placeholder="Search Contact"
                 value={finduser}
                 onChange={(e) => setfinduser(e.target.value)}
-              />
+              /> */}
             </div>
 
             {show ? null : <NavbarChat />}

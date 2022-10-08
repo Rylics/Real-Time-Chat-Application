@@ -95,6 +95,7 @@ function Chat({ socket, toUser }) {
         const addMessage = [...prev.message, data];
         const newMessage = message;
         newMessage.message = [...addMessage];
+        console.log(message);
         axios.post("http://localhost:4195/addmessage", {
           username: profilename,
           message: data,
