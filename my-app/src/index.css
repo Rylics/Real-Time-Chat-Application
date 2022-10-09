@@ -27,17 +27,55 @@ html {
   width: 30%;
   display: flex;
   flex-direction: column;
-
+  position: relative;
   background-color: darkslategrey;
   color: white;
   overflow-y: scroll;
-  position: relative;
+
   /* border-top-left-radius: inherit;
   border-bottom-left-radius: inherit; */
 }
 .sectionLeft-Header {
   display: flex;
   justify-content: space-between;
+  background-color: white;
+  border-bottom: 0.1px solid grey;
+}
+
+.Menu-dot li::marker {
+  color: darkslategrey;
+}
+
+.Menu-dot li {
+  margin-right: 1px;
+  padding: 0px;
+  height: 10px;
+}
+.Menu-dot ul {
+  display: block;
+}
+.Menu-dot {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 7px;
+  cursor: pointer;
+  width: 20px;
+}
+
+.Menu-option {
+  color: black;
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  height: fit-content;
+  background-color: whitesmoke;
+  top: 50px;
+  right: 0;
+  margin-right: 3%;
+  box-shadow: 0px -1px 10px 3px rgb(0 0 0 / 98%);
+}
+.Menu-option p {
+  padding: 5px;
 }
 .Mode {
   width: 20%;
@@ -61,7 +99,7 @@ html {
 }
 .catorgize-chat {
   display: flex;
-  background-color: mediumspringgreen;
+  background-color: mediumaquamarine;
   justify-content: space-evenly;
   padding: 10px;
   font-weight: 900;
@@ -170,16 +208,23 @@ html {
   height: 50px;
   cursor: pointer;
 }
+.section-left a {
+  text-decoration: none;
+  list-style: none;
+  color: darkslategrey;
+  font-weight: 900;
+  font-variant: small-caps;
+}
 a {
   text-decoration: none;
   list-style: none;
-  color: grey;
+  color: lightslategray;
   font-weight: 1000;
   font-variant: small-caps;
 }
 
 .catorgize-chat a.active {
-  color: darkgreen;
+  color: black;
 }
 
 .catorgize-chat a::after {
@@ -235,7 +280,7 @@ a {
 .message-header {
   min-height: 50px;
   width: 100%;
-  background-color: mediumspringgreen;
+  background-color: mediumaquamarine;
   color: black;
 
   justify-content: space-between;

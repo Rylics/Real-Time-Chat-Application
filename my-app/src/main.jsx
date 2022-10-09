@@ -14,7 +14,8 @@ import darkMode from "./img/darkmode.png";
 import lightMode from "./img/lightmode.png";
 import messageImage from "./img/messageImage.png";
 import plusImage from "./img/plus.png";
-import unknownImage from "./img/unknownImage";
+import unknownImage from "./img/unknownImage.jpg";
+import menu from "./img/threedots.png";
 
 const socket = io.connect("http://localhost:4195");
 
@@ -25,6 +26,7 @@ function ChatApp() {
   const [show, setshow] = useState(false);
   const [open, close] = useState(false);
   const [finduser, setfinduser] = useState("");
+  const [showMenu, setMenu] = useState(false);
 
   const [Mode, setMode] = useState("off");
 
@@ -33,6 +35,9 @@ function ChatApp() {
   function Hideheader() {
     setshow(!show);
   }
+  function showMenu_option() {
+    setMenu(!showMenu);
+  }
 
   return (
     <>
@@ -40,7 +45,31 @@ function ChatApp() {
         <div className="section-left">
           <div className="contact">
             <div className="sectionLeft-Header">
-              <img src={unknownImage} alt="" srcset="" />
+              <img
+                src={unknownImage}
+                alt="unknowprofile"
+                style={{ width: "50px" }}
+              />
+
+              {/* <img src={menu} alt="unknowprofile" style={{ width: "40px" }} /> */}
+
+              <div className="Menu-dot" onClick={showMenu_option}>
+                <ul>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                </ul>
+              </div>
+
+              {showMenu && (
+                <div className="Menu-option">
+                  <p>Profile</p>
+                  <p>Status</p>
+                  <p>Setting</p>
+                  <p>Log out</p>
+                </div>
+              )}
+
               {/* <div className="Mode">
                 <img
                   onClick={() => setMode(!Mode)}
