@@ -3,17 +3,21 @@ const bcrypt = require("bcrypt");
 
 const Login = async (req, res) => {
   const { username, password } = req.body;
-
   const users = await Messages.findOne({ username: username }).exec();
   try {
-    const macth = await bcrypt.compare(password, users.password);
+    if (!users) {
+      return res.sendStatus(404);
+    }
 
+    const macth = await bcrypt.compare(password, users.password);
     if (macth) {
       await users.save();
-      res.send(users);
+      return res.send(users);
+    } else {
+      res.sendStatus(403);
     }
   } catch (error) {
-    return res.sendStatus(403);
+    return res.send(error);
   }
 };
 

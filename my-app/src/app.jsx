@@ -8,8 +8,8 @@ import SignUp from "./pages/SignUp";
 export const ChatOpen = createContext();
 export default function App() {
   const [changeConvo, setchangeConvo] = useState("chats");
-  const [user, setuser] = useState("");
-  const [listUser, setlistUser] = useState([]);
+  const [Newcontact, setNewcontact] = useState("");
+  const [listContact, setlistContact] = useState([]);
   const [profilename, setprofilename] = useState("");
   const [message, setmessage] = useState([]);
   const [filtermessage, setfiltermessage] = useState([]);
@@ -20,13 +20,16 @@ export default function App() {
   const [groupID, setgroupID] = useState("");
   const [Notification, setNotification] = useState("");
   const [token, settoken] = useState(false);
+  const [OnlineUser, setOnlineUSer] = useState([]);
 
   return (
     <>
       <ChatOpen.Provider
         value={{
-          user,
-          listUser,
+          Newcontact,
+          OnlineUser,
+          setOnlineUSer,
+          listContact,
           message,
           filtermessage,
           profilename,
@@ -48,8 +51,8 @@ export default function App() {
           setSelectUser,
           setfiltermessage,
           setmessage,
-          setlistUser,
-          setuser,
+          setlistContact,
+          setNewcontact,
           setprofilename,
         }}
       >

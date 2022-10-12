@@ -14,6 +14,9 @@ const messageShema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
+  about: {
+    type: String,
+  },
 
   password: {
     type: String,

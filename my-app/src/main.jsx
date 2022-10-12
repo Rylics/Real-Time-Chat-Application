@@ -9,24 +9,30 @@ import JoinGroup from "./commponent/JoinGroup";
 import ListOfContact from "./commponent/ListOfContact";
 import MoreFeature, { BackButton } from "./commponent/MoreFeature";
 import NavbarChat from "./commponent/NavbarChat";
+import Profile from "./commponent/Profile";
 import { LogOut } from "./commponent/auth/LogOut";
 import darkMode from "./img/darkmode.png";
 import lightMode from "./img/lightmode.png";
 import messageImage from "./img/messageImage.png";
 import plusImage from "./img/plus.png";
 import unknownImage from "./img/unknownImage.jpg";
-import menu from "./img/threedots.png";
 
 const socket = io.connect("http://localhost:4195");
 
 function ChatApp() {
-  const { selectUser, groups, setgroups, selectGroups, changeConvo } =
-    useContext(ChatOpen);
+  const {
+    selectUser,
+    groups,
+    setgroups,
+
+    selectGroups,
+    changeConvo,
+  } = useContext(ChatOpen);
 
   const [show, setshow] = useState(false);
   const [open, close] = useState(false);
-  const [finduser, setfinduser] = useState("");
   const [showMenu, setMenu] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const [Mode, setMode] = useState("off");
 
@@ -39,19 +45,32 @@ function ChatApp() {
     setMenu(!showMenu);
   }
 
+  function Callprofile() {
+    setShowProfile(true);
+  }
   return (
     <>
       <div className="chat-container">
         <div className="section-left">
+          <Profile showProfile={showProfile} setShowProfile={setShowProfile} />
           <div className="contact">
             <div className="sectionLeft-Header">
               <img
                 src={unknownImage}
                 alt="unknowprofile"
-                style={{ width: "50px" }}
+                style={{ width: "50px", cursor: "pointer" }}
+                onClick={Callprofile}
               />
 
-              {/* <img src={menu} alt="unknowprofile" style={{ width: "40px" }} /> */}
+              <div className="Mode">
+                <img
+                  onClick={() => setMode(!Mode)}
+                  className="ModeImage"
+                  src={Mode ? lightMode : darkMode}
+                  alt="switch"
+                  style={{ background: "black" }}
+                />
+              </div>
 
               <div className="Menu-dot" onClick={showMenu_option}>
                 <ul>
@@ -69,29 +88,16 @@ function ChatApp() {
                   <p>Log out</p>
                 </div>
               )}
-
-              {/* <div className="Mode">
-                <img
-                  onClick={() => setMode(!Mode)}
-                  className="ModeImage"
-                  src={Mode ? lightMode : darkMode}
-                  alt="switch"
-                />
-              </div> */}
-              {/* <input
-                className="searchInput"
-                type="text"
-                placeholder="Search Contact"
-                value={finduser}
-                onChange={(e) => setfinduser(e.target.value)}
-              /> */}
             </div>
 
             {show ? null : <NavbarChat />}
 
             {show ? <BackButton setshow={setshow} show={show} /> : null}
             <Routes>
-              <Route path="contact" element={<ListOfContact />}></Route>
+              <Route
+                path="contact"
+                element={<ListOfContact socket={socket} />}
+              ></Route>
 
               <Route path="status" element={<h3>Status</h3>}></Route>
               <Route
@@ -135,7 +141,7 @@ function ChatApp() {
 
           <div className="add-friends">
             <div>
-              <NavLink to={show ? "listcontact" : "morefeature"}>
+              <NavLink to={show ? "contact" : "morefeature"}>
                 <img
                   onClick={Hideheader}
                   className="add-button"

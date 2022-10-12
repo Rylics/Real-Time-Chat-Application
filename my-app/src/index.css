@@ -29,11 +29,61 @@ html {
   flex-direction: column;
   position: relative;
   background-color: darkslategrey;
-  color: white;
+
   overflow-y: scroll;
 
   /* border-top-left-radius: inherit;
   border-bottom-left-radius: inherit; */
+}
+
+.Profile-edit {
+  position: absolute;
+  height: inherit;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: whitesmoke;
+  transform: translateX(-500px);
+  transition: all 1s;
+  z-index: 1;
+}
+.Profile-move {
+  transform: translateX(0px);
+  transition: all 1s;
+}
+.Profile-edit-header {
+  height: 50px;
+  background-color: mediumaquamarine;
+  width: 100%;
+}
+.Profile-edit-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.ProfileImage {
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.Profile-details-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.Profile-mini-container {
+  color: black;
+  width: 70%;
+  padding: 10px;
+
+  background-color: mediumaquamarine;
+}
+.Profile-mini-container-text {
+  width: 70%;
+  padding: 10px;
 }
 .sectionLeft-Header {
   display: flex;
@@ -101,10 +151,12 @@ html {
   display: flex;
   background-color: mediumaquamarine;
   justify-content: space-evenly;
-  padding: 10px;
+  align-items: center;
+  padding-left: 10px;
   font-weight: 900;
   color: black;
   font-size: large;
+  height: 50px;
 }
 
 .contact {
@@ -439,31 +491,36 @@ a {
 
 .userInfo {
   display: flex;
-  flex-direction: column;
-  gap: 0px;
-  justify-content: center;
+  margin-right: 2%;
+  justify-content: space-between;
   align-items: center;
-  width: 100px;
+  width: 100%;
 }
 
 .searchInput {
   width: 100%;
 }
 
-.BackButton-container,
-.backButton {
+.BackButton-container {
   width: 100%;
-  height: 40px;
+  height: 50px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  background-color: mediumspringgreen;
+  background-color: mediumaquamarine;
   color: black;
 }
 .backButton {
   cursor: pointer;
   display: flex;
   align-items: center;
+
+  height: 40px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  color: black;
 }
 .BackButton-wrapper {
   width: fit-content;

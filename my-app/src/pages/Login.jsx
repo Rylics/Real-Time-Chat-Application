@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ChatOpen } from "../app";
@@ -7,7 +8,7 @@ function Login() {
   const [password, setpassword] = useState("");
   const [error, seterror] = useState(false);
   const [username, setusername] = useState("");
-  const { settoken, message, setmessage, setprofilename } =
+  const { settoken, setmessage, setprofilename, setlistContact } =
     useContext(ChatOpen);
   const navigate = useNavigate();
   function Submit() {
@@ -20,15 +21,29 @@ function Login() {
         .then((res) => {
           setmessage(res.data);
           setprofilename(res.data.username);
-          console.log(message);
+          setlistContact(res.data.contact);
         })
         .then(() => {
           settoken(true);
-          navigate("/app");
+          navigate("/app/contact");
         })
-        .catch(() => {
-          seterror(true);
-          return seterror("UserName or Password is incorrect");
+        .catch((error) => {
+          console.log(error);
+          if (!error.response) {
+            seterror(true);
+            return seterror("Server is down try again later");
+          }
+          if (error.response.status === 403) {
+            seterror(true);
+            return seterror("UserName or Password is incorrect");
+          }
+          if (error.response.status === 404) {
+            seterror(true);
+            return seterror("User not found");
+          } else {
+            seterror(true);
+            return seterror("Network Error failed to login");
+          }
         });
     }
     setusername("");

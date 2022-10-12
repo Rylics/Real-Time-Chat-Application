@@ -26,9 +26,6 @@ const Login = require("./controller/Login");
 const { getgroups } = require("process");
 const UploadImage = require("./Methods/uploads");
 
-let user = [];
-const room = [];
-
 mongoose.connect(
   process.env.DATABASE_URL,
   {
@@ -57,9 +54,16 @@ app.put("/uploads", configUpload.single("image"), UploadImage);
 // app.post("/creategroup", createGroup);
 // app.get("/getgroups", getGroups);
 
+let user = [];
+const room = [];
+
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:3002",
+    ],
     methods: ["POST", "GET", "PATCH"],
   },
 });
@@ -67,9 +71,16 @@ const io = new Server(server, {
 io.on("connection", async (socket) => {
   console.log(`The user:${socket.id} is connected`);
 
-  socket.on("send_message", async (data) => {
-    user.push(data);
+  socket.on("ActiveUser", async (data) => {
+    if (!user.some((user) => user.socket_id === data.socket_id)) {
+      user.push(data);
 
+      console.log("Update---------------------------update\n", user, "\n");
+    }
+    io.emit("OnlineStatus", user);
+  });
+
+  socket.on("send_message", async (data) => {
     await Messages.findOneAndUpdate(
       { username: data.username },
       {
@@ -78,21 +89,20 @@ io.on("connection", async (socket) => {
         },
       }
     );
-    console.log(user[0].message.sendeeer);
-    console.log(data.message.socket_id);
-    if (user.length >= 2) {
+    socket.emit("OnlineStatus", user);
+    if (user) {
       const toUser = user?.map((storedata) => {
-        if (data.message.receiver === storedata.message.sender) {
-          return storedata.message.socket_id;
+        if (data.message.receiver === storedata.profilename) {
+          return storedata.socket_id;
         }
       });
       io.to(toUser).emit("receive_message", data.message);
     }
 
-    console.log(user);
+    // console.log(user);
   });
 
-  socket.on(["createGroup"], async (groupdata) => {
+  socket.on("createGroup", async (groupdata) => {
     const groupID = await groupdata.groupID;
     socket.join(groupID);
     console.log(groupdata.profilename, "create group", groupdata.groupName);
@@ -114,10 +124,10 @@ io.on("connection", async (socket) => {
   socket.on("disconnect", () => {
     if (user) {
       const newarrary = user.filter((data) => {
-        return data !== socket.id;
+        return data.socket_id !== socket.id;
       });
       user = newarrary;
-      console.log(user);
+      io.emit("OnlineStatus", user);
     }
 
     console.log(`user ${socket.id}  disconnected`);

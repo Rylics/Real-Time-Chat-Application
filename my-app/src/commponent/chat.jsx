@@ -22,9 +22,15 @@ function Chat({ socket, toUser }) {
     changeConvo,
     groupmessage,
     setgroupmessage,
-
+    selectUser,
+    setOnlineUSer,
     selectGroups,
   } = useContext(ChatOpen);
+
+  const ActiveUser = {
+    socket_id: socket.id,
+    profilename: profilename,
+  };
 
   const sendMessage = async () => {
     if (currentmessage) {
@@ -110,7 +116,11 @@ function Chat({ socket, toUser }) {
     socket.on("receiveGroupMessage", (data) =>
       setgroupmessage((prev) => [...prev, data])
     );
+    socket.emit("ActiveUser", ActiveUser);
 
+    socket.on("OnlineStatus", (data) => {
+      setOnlineUSer(data);
+    });
     return () => socket.off();
     // eslint-disable-next-line
   }, [socket]);
@@ -142,17 +152,17 @@ function Chat({ socket, toUser }) {
             filtermessage?.map((data) => {
               return (
                 <>
-                  <div class="container">
+                  <div className="container">
                     <div
-                      class={
+                      className={
                         toUser === data.sender
                           ? "message-blue"
                           : "message-orange"
                       }
                     >
-                      <p class="message-content">{data.message}</p>
+                      <p className="message-content">{data.message}</p>
                       <div
-                        class={
+                        className={
                           toUser === data.sender
                             ? "message-timestamp-left"
                             : "message-timestamp-right"
@@ -241,9 +251,19 @@ function Chat({ socket, toUser }) {
           )}
           <button
             className={
-              currentmessage || currentGroupMessage ? "sendButton" : null
+              selectGroups ||
+              (selectUser && currentmessage) ||
+              currentGroupMessage
+                ? "sendButton"
+                : null
             }
-            disabled={currentmessage || currentGroupMessage ? false : true}
+            disabled={
+              selectGroups ||
+              (selectUser && currentmessage) ||
+              currentGroupMessage
+                ? false
+                : true
+            }
             onClick={sendMessage}
           >
             <img src={sendImage} alt="" />

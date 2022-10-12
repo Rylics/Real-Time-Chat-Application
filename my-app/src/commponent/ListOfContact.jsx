@@ -2,62 +2,68 @@ import { useContext } from "react";
 import { ChatOpen } from "../app";
 import profileImage from "../img/New-message-bro.svg";
 import NewImage from "../img/new.png";
+import { useEffect } from "react";
 
 function ListOfContact() {
-	const { listUser, finduser, setSelectUser, setchangeConvo, message } =
-		useContext(ChatOpen);
-	function SelectUser(user) {
-		setSelectUser(user);
-		setchangeConvo("chats");
-	}
+  const { setSelectUser, setchangeConvo, listContact, OnlineUser } =
+    useContext(ChatOpen);
 
-	function AllUser(index, user) {
-		return (
-			<>
-				<div className="single-user" onClick={() => SelectUser(user)}>
-					<div className="profileImage">
-						<img className="profileImage" src={profileImage} alt="" />
-					</div>
-					<div className="userInfo">
-						<h3 key={index}>
-							{user}
-							<br />
-							<span className="recentMessage">last message</span>
-						</h3>
-					</div>
-				</div>
-			</>
-		);
-	}
+  function SelectUser(user) {
+    setSelectUser(user);
+    setchangeConvo("chats");
+  }
 
-	return (
-		<div className="friends">
-			{message.contact.length >= 1 ? null : (
-				<>
-					<div className="NoChats">
-						<h1>Start A</h1> <img src={NewImage} alt="" />
-						<h1>Chat</h1>
-					</div>
-				</>
-			)}
-			{message.contact?.map((user, index) => {
-				if (!finduser) {
-					return AllUser(index, user);
-				}
-				if (finduser === user) {
-					return AllUser(index, user);
-				}
-				return (
-					<>
-						<div className="errorContact">
-							<p>No Contact found</p>
-							<p>Try add new contact</p>
-						</div>
-					</>
-				);
-			})}
-		</div>
-	);
+  console.log(OnlineUser);
+  useEffect(() => {
+    Contacts();
+    // eslint-disable-next-line
+  }, [listContact, OnlineUser]);
+
+  function Contacts() {
+    return (
+      <>
+        {listContact?.map((user, index) => {
+          const online = OnlineUser.find(
+            (onlineuser) => onlineuser.profilename === user
+          );
+          return (
+            <div
+              className="single-user"
+              key={index}
+              onClick={() => SelectUser(user)}
+            >
+              <div className="profileImage">
+                <img
+                  className="profileImage"
+                  clear
+                  src={profileImage}
+                  alt="ProfileImage"
+                />
+              </div>
+              <div className="userInfo">
+                <h3 key={index}>{user}</h3>
+                <h5> {online ? "online" : "offline"}</h5>
+              </div>
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+
+  return (
+    <div className="friends">
+      {listContact.length >= 1 ? null : (
+        <>
+          <div className="NoChats">
+            <h1>Start A</h1> <img src={NewImage} alt="NewImage" />
+            <h1>Chat</h1>
+          </div>
+        </>
+      )}
+      <Contacts />
+    </div>
+  );
 }
 
 export default ListOfContact;

@@ -64,6 +64,5 @@ module.exports = {
   Update,
   Delete,
   Addcontact,
-
   AddMessage,
 };
