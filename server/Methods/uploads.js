@@ -14,10 +14,30 @@ const UploadImage = async (req, res) => {
       }
     );
     res.send("save");
-    console.log("Image is save");
   } catch (err) {
     console.log(err.message);
   }
 };
 
-module.exports = UploadImage;
+const UpdateAllProfileImage = async (req, res) => {
+  const { username } = req.body;
+  try {
+    await Messages.updateMany(
+      { "contact.username": username },
+      {
+        $set: {
+          "contact.$.profileImage": {
+            data: fs.readFileSync("uploads/" + req.file.filename),
+            contentType: "image/png",
+          },
+        },
+      }
+    ).then(() => {
+      res.send("save");
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+module.exports = { UploadImage, UpdateAllProfileImage };

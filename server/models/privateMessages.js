@@ -23,18 +23,17 @@ const messageShema = new mongoose.Schema({
   },
   contact: [
     {
-      type: String,
+      username: {
+        type: String,
+      },
+      profileImage: {
+        data: Buffer,
+        contentType: String,
+      },
+      notification: { type: String },
     },
   ],
-  // {
-  //   name: {
-  //     type: String,
-  //   },
-  //   image: {
-  //     data: Buffer,
-  //     contentType: String,
-  //   },
-  // },
+
   message: [
     {
       sender: {

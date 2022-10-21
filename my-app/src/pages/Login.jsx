@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { FaEyeSlash, FaEye, FaUserLock, FaUser } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ChatOpen } from "../app";
@@ -8,10 +8,20 @@ function Login() {
   const [password, setpassword] = useState("");
   const [error, seterror] = useState(false);
   const [username, setusername] = useState("");
-  const { settoken, setmessage, setprofilename, setlistContact } =
-    useContext(ChatOpen);
+  const [loading, setloading] = useState(false);
+  const [passwordvisible, setpasswordvisible] = useState(false);
+
+  const {
+    settoken,
+    setmessage,
+    setprofilename,
+    setlistContact,
+
+    setbaseImage,
+  } = useContext(ChatOpen);
   const navigate = useNavigate();
   function Submit() {
+    setloading(true);
     if (username && password) {
       axios
         .post("http://localhost:4195/login", {
@@ -22,26 +32,32 @@ function Login() {
           setmessage(res.data);
           setprofilename(res.data.username);
           setlistContact(res.data.contact);
+          setbaseImage(res.data);
         })
         .then(() => {
           settoken(true);
+          setloading(false);
           navigate("/app/contact");
         })
         .catch((error) => {
           console.log(error);
           if (!error.response) {
             seterror(true);
+            setloading(false);
             return seterror("Server is down try again later");
           }
           if (error.response.status === 403) {
             seterror(true);
+            setloading(false);
             return seterror("UserName or Password is incorrect");
           }
           if (error.response.status === 404) {
             seterror(true);
+            setloading(false);
             return seterror("User not found");
           } else {
             seterror(true);
+            setloading(false);
             return seterror("Network Error failed to login");
           }
         });
@@ -49,7 +65,9 @@ function Login() {
     setusername("");
     setpassword("");
   }
-
+  const Showpassword = () => {
+    setpasswordvisible(!passwordvisible);
+  };
   useEffect(() => {
     seterror(false);
   }, [username, password]);
@@ -70,8 +88,8 @@ function Login() {
           </svg>
         </div>
         <div className="login-form">
-          <h1 className="login-header">Welcome</h1>
-          <div className="login-row">
+          <h1 className="login-header">Let's chat</h1>
+          <div className="login-row userInput">
             <label htmlFor="username">User Name</label>
             <br />
             <input
@@ -83,18 +101,32 @@ function Login() {
               autoFocus={true}
               autoComplete="off"
             />
+            <span className="userIcon">
+              <FaUser style={{ width: "15px" }} />
+            </span>
           </div>
-          <div className="login-row">
+          <div className="login-row passwordInput">
             <label htmlFor="password">Password</label>
             <br />
             <input
               value={password}
               onChange={(e) => setpassword(e.target.value)}
-              type="text"
+              type={passwordvisible ? "text" : "password"}
               name="password"
               id="password"
               autoComplete="off"
             />
+            {password && (
+              <span
+                className="passwordVisible-icon"
+                onClick={() => Showpassword()}
+              >
+                {passwordvisible ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            )}
+            <span className="passwordIcon">
+              <FaUserLock />
+            </span>
           </div>
           {
             <p className={error ? "errorMessage" : "showErrorMessage"}>
@@ -106,8 +138,10 @@ function Login() {
           </div>
 
           <button className="login-button" onClick={() => Submit()}>
-            Login
+            {loading ? "Loading...." : "Login"}
           </button>
+
+          {}
 
           <div className="curve-bottom">
             <svg

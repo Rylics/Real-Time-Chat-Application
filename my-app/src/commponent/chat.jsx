@@ -3,10 +3,10 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { ChatOpen } from "../app";
 import sendImage from "../img/send.png";
 
-function Chat({ socket, toUser }) {
+function Chat({ socket }) {
   const [currentmessage, setcurrentmessage] = useState("");
   const [currentGroupMessage, setcurrentGroupMessage] = useState("");
-  const [filterGroupMessage, setFilterGroupMessage] = useState([]);
+  const [filtermessage, setfiltermessage] = useState([]);
   const [trackMessageUpdate, settrackMessageUpdate] = useState(0);
   const scrolldown = useRef("");
 
@@ -17,8 +17,8 @@ function Chat({ socket, toUser }) {
     profilename,
     message,
     setmessage,
-    filtermessage,
-    setfiltermessage,
+    setlistContact,
+    listContact,
     changeConvo,
     groupmessage,
     setgroupmessage,
@@ -36,7 +36,7 @@ function Chat({ socket, toUser }) {
     if (currentmessage) {
       const messageData = {
         socket_id: socket.id,
-        receiver: toUser,
+        receiver: selectUser,
         sender: profilename,
         message: currentmessage,
         time: currentTime,
@@ -76,15 +76,14 @@ function Chat({ socket, toUser }) {
   // then combine the two and sort by the timezone
   function filterFunction() {
     const userchat = message.message.filter(
-      (data) => profilename === data.sender && toUser === data.receiver
+      (data) => profilename === data.sender && selectUser === data.receiver
     );
     const recieveChat = message.message.filter(
-      (data) => toUser === data.sender && profilename === data.receiver
+      (data) => selectUser === data.sender && profilename === data.receiver
     );
     const joinmessage = userchat.concat(recieveChat);
     const sortmessage = joinmessage.sort((a, b) => a.numberTime - b.numberTime);
-    setfiltermessage(sortmessage);
-    console.log(filtermessage);
+    return setfiltermessage(sortmessage);
   }
 
   function groupMessageFilter() {
@@ -92,8 +91,10 @@ function Chat({ socket, toUser }) {
       (oldmesssage) => oldmesssage.groupID === selectGroups.groupID
     );
 
-    setFilterGroupMessage(groupMessage);
+    return groupMessage;
   }
+  const filterGroupMessage = groupMessageFilter();
+
   // Get message from the sender and update the current message chat in the array
   useEffect(() => {
     socket.on("receive_message", (data) => {
@@ -101,11 +102,30 @@ function Chat({ socket, toUser }) {
         const addMessage = [...prev.message, data];
         const newMessage = message;
         newMessage.message = [...addMessage];
-        console.log(message);
+
+        setlistContact((prevState) => {
+          const newState = prevState.map((obj) => {
+            if (selectUser.toLowerCase() === data.sender.toLowerCase()) {
+              return { ...obj, notification: Number(0) };
+            }
+
+            // 👇️ if username equals to sender, update notify the other reciever
+            if (obj.username === data.sender) {
+              return { ...obj, notification: Number(obj.notification) + 1 };
+            }
+
+            // 👇️ otherwise return object as is
+            return obj;
+          });
+
+          return newState;
+        });
+
         axios.post("http://localhost:4195/addmessage", {
           username: profilename,
           message: data,
         });
+
         settrackMessageUpdate((prev) => {
           return prev + 1;
         });
@@ -123,13 +143,13 @@ function Chat({ socket, toUser }) {
     });
     return () => socket.off();
     // eslint-disable-next-line
-  }, [socket]);
+  }, [socket, selectUser]);
 
   useEffect(() => {
     filterFunction();
 
     // eslint-disable-next-line
-  }, [message.message, toUser, trackMessageUpdate]);
+  }, [message.message, selectUser, trackMessageUpdate]);
 
   useEffect(() => {
     groupMessageFilter();
@@ -142,20 +162,20 @@ function Chat({ socket, toUser }) {
       block: "end",
       inline: "center",
     });
-  }, [toUser, filtermessage, selectGroups, filterGroupMessage]);
+  }, [selectUser, filtermessage, selectGroups, filterGroupMessage]);
 
   return (
     <>
       <div className="chat-body">
-        <div className="chat-message" id={toUser ? null : "newfriend"}>
+        <div className="chat-message" id={selectUser ? null : "newfriend"}>
           {changeConvo === "chats" &&
-            filtermessage?.map((data) => {
+            filtermessage?.map((data, index) => {
               return (
                 <>
-                  <div className="container">
+                  <div className="container" key={index}>
                     <div
                       className={
-                        toUser === data.sender
+                        selectUser === data.sender
                           ? "message-blue"
                           : "message-orange"
                       }
@@ -163,7 +183,7 @@ function Chat({ socket, toUser }) {
                       <p className="message-content">{data.message}</p>
                       <div
                         className={
-                          toUser === data.sender
+                          selectUser === data.sender
                             ? "message-timestamp-left"
                             : "message-timestamp-right"
                         }
@@ -178,7 +198,7 @@ function Chat({ socket, toUser }) {
 
           {changeConvo === "groupChats" && (
             <>
-              {filterGroupMessage?.map((message) => {
+              {filterGroupMessage?.map((message, index) => {
                 return (
                   <>
                     {message.join && (
@@ -190,10 +210,10 @@ function Chat({ socket, toUser }) {
                     )}
 
                     {message.message && (
-                      <div class="container">
+                      <div class="container" key={index}>
                         <div
                           class={
-                            toUser === message.sender
+                            selectUser === message.sender
                               ? "message-blue"
                               : "message-orange"
                           }
@@ -207,7 +227,7 @@ function Chat({ socket, toUser }) {
                           <p class="message-content">{message.message}</p>
                           <div
                             class={
-                              toUser === message.sender
+                              selectUser === message.sender
                                 ? "message-timestamp-left"
                                 : "message-timestamp-right"
                             }
@@ -270,7 +290,6 @@ function Chat({ socket, toUser }) {
           </button>
         </div>
       </div>
-      {/* <Notification /> */}
     </>
   );
 }

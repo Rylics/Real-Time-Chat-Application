@@ -15,18 +15,31 @@ const AddMessage = async (req, res) => {
 const Addcontact = async (req, res) => {
   const { add, username } = req.body;
   try {
-    await Messages.findOneAndUpdate(
+    const finduser = await Messages.findOne({ username: add }).exec();
+
+    if (!finduser) {
+      return res.sendStatus(404);
+    }
+    const data = await Messages.findOneAndUpdate(
       { username: `${username}` },
       {
         $addToSet: {
-          contact: add,
+          contact: {
+            username: add,
+            profileImage: {
+              data: finduser.profileImage.data,
+              contentType: finduser.profileImage.contentType,
+            },
+            notification: 0,
+          },
         },
       }
     );
+
+    return res.send(data);
   } catch (error) {
     return error.message;
   }
-  return res.send("contact added");
 };
 
 const Delete = async (req, res) => {
@@ -42,27 +55,38 @@ const Update = async (req, res) => {
   try {
     users.contact = usename;
     res.send("Sucessful update");
-    console.log(users);
   } catch (error) {
     return console.log(error.message);
   }
   await users.save();
 };
 
-const Get = async (req, res) => {
-  const users = Messages.find({}, (error, user) => {
-    try {
-      res.send(user);
-    } catch (error) {
-      return error.message;
-    }
-  });
+const UpdateProfileImage = async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const users = await Messages.findOne({ username: username }).exec();
+    res.send(users);
+  } catch (error) {
+    return error.message;
+  }
 };
 
+const Get = async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const users = await Messages.findOne({ username: username }).exec();
+    res.send(users);
+  } catch (error) {
+    return error.message;
+  }
+};
 module.exports = {
-  Get,
+  UpdateProfileImage,
   Update,
   Delete,
   Addcontact,
   AddMessage,
+  Get,
 };

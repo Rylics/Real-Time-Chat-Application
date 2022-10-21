@@ -1,5 +1,6 @@
 const UserAccount = require("../controller/SignUp");
 const groupMessage = require("../models/groupMessage");
+const Messages = require("../models/groupMessage");
 
 const createGroup = (req, res) => {
   const { userName, groupname, groupId, message } = req.body;
@@ -42,4 +43,5 @@ async function addToGroupMessage(req, res) {
   }
   return res.send("contact added");
 }
+
 module.exports = { createGroup, getGroups, addToGroupMessage };

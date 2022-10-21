@@ -10,21 +10,21 @@ const mongoose = require("mongoose");
 const Messages = require("./models/privateMessages");
 const configUpload = require("./controller/Multer");
 
-const { createGroup, getGroups } = require("./Methods/groupMessage");
+const { createGroup, getGroups, update } = require("./Methods/groupMessage");
 require("dotenv").config();
 
 const {
   AddMessage,
   Delete,
-  Update,
   Get,
+  UpdateProfileImage,
   Addcontact,
 } = require("./Methods/Messages");
 
 const UserAccount = require("./controller/SignUp");
 const Login = require("./controller/Login");
 const { getgroups } = require("process");
-const UploadImage = require("./Methods/uploads");
+const { UploadImage, UpdateAllProfileImage } = require("./Methods/uploads");
 
 mongoose.connect(
   process.env.DATABASE_URL,
@@ -39,10 +39,11 @@ mongoose.connect(
 
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get("/messages", Get);
+app.post("/get", Get);
+app.post("/updateprofile:Image", UpdateProfileImage);
 app.delete("/user", Delete);
 app.post("/signup", UserAccount);
 app.post("/addcontact", Addcontact);
@@ -50,12 +51,16 @@ app.post("/login", Login);
 app.post("/addMessage", AddMessage);
 
 app.put("/uploads", configUpload.single("image"), UploadImage);
+app.put(
+  "/updateAllprofilePic",
+  configUpload.single("image"),
+  UpdateAllProfileImage
+);
 
 // app.post("/creategroup", createGroup);
 // app.get("/getgroups", getGroups);
 
 let user = [];
-const room = [];
 
 const io = new Server(server, {
   cors: {
@@ -64,12 +69,22 @@ const io = new Server(server, {
       "http://localhost:3001",
       "http://localhost:3002",
     ],
-    methods: ["POST", "GET", "PATCH"],
+    methods: ["POST", "GET", "PATCH", "PUT"],
   },
 });
 
 io.on("connection", async (socket) => {
   console.log(`The user:${socket.id} is connected`);
+
+  socket.on("SendUpdatedProfile", (data) => {
+    io.emit("RecievedUpdatedProfile", data);
+  });
+
+  // socket.on("Sendfile", (data) => {
+  //   io.emit("Sendfile", data);
+
+  //   console.log(data);
+  // });
 
   socket.on("ActiveUser", async (data) => {
     if (!user.some((user) => user.socket_id === data.socket_id)) {
@@ -81,25 +96,22 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("send_message", async (data) => {
-    await Messages.findOneAndUpdate(
-      { username: data.username },
-      {
-        $push: {
-          message: data.message,
-        },
-      }
-    );
-    socket.emit("OnlineStatus", user);
     if (user) {
       const toUser = user?.map((storedata) => {
         if (data.message.receiver === storedata.profilename) {
           return storedata.socket_id;
         }
       });
-      io.to(toUser).emit("receive_message", data.message);
+      socket.to(toUser).emit("receive_message", data.message);
+      await Messages.findOneAndUpdate(
+        { username: data.username },
+        {
+          $push: {
+            message: data.message,
+          },
+        }
+      );
     }
-
-    // console.log(user);
   });
 
   socket.on("createGroup", async (groupdata) => {
@@ -117,8 +129,6 @@ io.on("connection", async (socket) => {
   socket.on("sendGroupMessage", async (groupMessage) => {
     const groupID = await groupMessage.groupID;
     socket.to(groupID).emit("receiveGroupMessage", groupMessage);
-    room.push(groupMessage);
-    console.log(room);
   });
 
   socket.on("disconnect", () => {

@@ -5,7 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 function SingUp() {
   const [email, setemail] = useState("");
   const [username, setusername] = useState("");
-
+  const [loading, setloading] = useState(false);
   const [password, setpassword] = useState("");
   const [confirmPassword, setconfirmPassword] = useState("");
   const [errorMessage, seterrorMessage] = useState("");
@@ -13,7 +13,11 @@ function SingUp() {
   const navigate = useNavigate();
 
   function Submit() {
+    if (password !== confirmPassword) {
+      return seterrorMessage(401);
+    }
     if (username && email && password) {
+      setloading(true);
       axios
         .post("http://localhost:4195/signup", {
           username: username,
@@ -21,7 +25,7 @@ function SingUp() {
           email: email,
         })
         .then((res) => {
-          console.log(res);
+          setloading(false);
           if (res.data === 409) {
             seterrorMessage(409);
 
@@ -40,10 +44,11 @@ function SingUp() {
           }
         })
         .catch((error) => {
+          setloading(false);
           console.log(error.message);
         });
     } else {
-      console.log("filled in all filed");
+      seterrorMessage(406);
     }
   }
 
@@ -68,7 +73,7 @@ function SingUp() {
           </svg>
         </div>
         <div className="register-form">
-          <h1 className="register-header">Sign Up</h1>
+          <h1 className="login-header">Sign Up</h1>
 
           <div className="login-row">
             <label htmlFor="username">username</label>
@@ -128,9 +133,10 @@ function SingUp() {
               autoComplete="off"
             />
             {errorMessage === 401 && (
-              <p className="errorMessage">
-                The password confirmation does not match
-              </p>
+              <p className="errorMessage">Password does not match</p>
+            )}
+            {errorMessage === 406 && (
+              <p className="errorMessage">Please fill in all field</p>
             )}
           </div>
 
@@ -138,7 +144,7 @@ function SingUp() {
             <NavLink to="/">Already resigtered? SignIn</NavLink>
           </div>
           <button className="register-button" onClick={Submit}>
-            Submit
+            {loading ? "Loading.." : "Submit"}
           </button>
         </div>
         <div class="curve-bottom">

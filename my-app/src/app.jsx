@@ -12,26 +12,34 @@ export default function App() {
   const [listContact, setlistContact] = useState([]);
   const [profilename, setprofilename] = useState("");
   const [message, setmessage] = useState([]);
-  const [filtermessage, setfiltermessage] = useState([]);
   const [selectUser, setSelectUser] = useState("");
   const [groups, setgroups] = useState([]);
   const [selectGroups, setSelectGroups] = useState("");
   const [groupmessage, setgroupmessage] = useState([]);
   const [groupID, setgroupID] = useState("");
-  const [Notification, setNotification] = useState("");
   const [token, settoken] = useState(false);
   const [OnlineUser, setOnlineUSer] = useState([]);
+  const [baseImage, setbaseImage] = useState("");
+  const [showProfile, setShowProfile] = useState(false);
+  const [updateChangeContactProfile, setupdateChangeContactProfile] = useState(
+    []
+  );
 
   return (
     <>
       <ChatOpen.Provider
         value={{
+          updateChangeContactProfile,
+          setupdateChangeContactProfile,
           Newcontact,
           OnlineUser,
           setOnlineUSer,
+          baseImage,
+          setbaseImage,
           listContact,
+          showProfile,
+          setShowProfile,
           message,
-          filtermessage,
           profilename,
           selectUser,
           groups,
@@ -39,17 +47,14 @@ export default function App() {
           changeConvo,
           groupmessage,
           groupID,
-          Notification,
           token,
           settoken,
-          setNotification,
           setgroupID,
           setgroupmessage,
           setchangeConvo,
           setSelectGroups,
           setgroups,
           setSelectUser,
-          setfiltermessage,
           setmessage,
           setlistContact,
           setNewcontact,

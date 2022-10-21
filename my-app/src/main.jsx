@@ -15,7 +15,10 @@ import darkMode from "./img/darkmode.png";
 import lightMode from "./img/lightmode.png";
 import messageImage from "./img/messageImage.png";
 import plusImage from "./img/plus.png";
-import unknownImage from "./img/unknownImage.jpg";
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import unknownProfile from "./img/unknownImage.jpg";
+import ConvertImage from "./commponent/Api/ConvertImage";
+import { Base64string } from "./commponent/Api/ConvertImage";
 
 const socket = io.connect("http://localhost:4195");
 
@@ -24,15 +27,15 @@ function ChatApp() {
     selectUser,
     groups,
     setgroups,
-
     selectGroups,
     changeConvo,
+    setShowProfile,
+    listContact,
   } = useContext(ChatOpen);
 
   const [show, setshow] = useState(false);
-  const [open, close] = useState(false);
+
   const [showMenu, setMenu] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
 
   const [Mode, setMode] = useState("off");
 
@@ -48,17 +51,26 @@ function ChatApp() {
   function Callprofile() {
     setShowProfile(true);
   }
+  // Convert the image from the database to readable png
+
+  const newlist = listContact.findIndex((object) => {
+    return object?.username === selectUser;
+  });
   return (
     <>
       <div className="chat-container">
         <div className="section-left">
-          <Profile showProfile={showProfile} setShowProfile={setShowProfile} />
+          <Profile socket={socket} />
           <div className="contact">
             <div className="sectionLeft-Header">
               <img
-                src={unknownImage}
-                alt="unknowprofile"
-                style={{ width: "50px", cursor: "pointer" }}
+                src={
+                  ConvertImage()
+                    ? `data:image/png;base64,${ConvertImage()}`
+                    : unknownProfile
+                }
+                alt="profileImage"
+                className="profileImage"
                 onClick={Callprofile}
               />
 
@@ -73,11 +85,9 @@ function ChatApp() {
               </div>
 
               <div className="Menu-dot" onClick={showMenu_option}>
-                <ul>
-                  <li></li>
-                  <li></li>
-                  <li></li>
-                </ul>
+                <BiDotsVerticalRounded
+                  style={{ width: "40px", height: "50px" }}
+                />
               </div>
 
               {showMenu && (
@@ -146,7 +156,7 @@ function ChatApp() {
                   onClick={Hideheader}
                   className="add-button"
                   src={show ? messageImage : plusImage}
-                  alt=""
+                  alt="something"
                 />
               </NavLink>
             </div>
@@ -166,14 +176,22 @@ function ChatApp() {
                 </>
               )}
 
-              <p style={{ marginLeft: "50px" }}>
-                {changeConvo === "chats" && selectUser}
-              </p>
+              <div className="chat-header-details">
+                {changeConvo === "chats" && selectUser && (
+                  <img
+                    className="contactHeaderProfileImage"
+                    src={`data:image/png;base64,${Base64string(newlist)}`}
+                    alt="profileImage"
+                  />
+                )}
+                <p>{selectUser}</p>
+              </div>
+
               <LogOut />
             </div>
           </div>
 
-          <Chat socket={socket} toUser={selectUser} open={open} close={close} />
+          <Chat socket={socket} toUser={selectUser} />
         </div>
       </div>
     </>
